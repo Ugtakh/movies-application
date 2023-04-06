@@ -1,6 +1,10 @@
+import Pagination from "@/components/pagination";
+import usePosts from "@/hooks/usePosts";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 interface IAwards {
   wins: Number;
@@ -38,12 +42,28 @@ interface IMovie {
     lastUpdated: Date;
   };
 }
-
 interface IMovies {
   movies: IMovie[];
+  pagination: any;
 }
 
-export default function Home({ movies }: IMovies) {
+export default function Home({ movies, pagination }: IMovies) {
+  const router = useRouter();
+  const pages = [1, 2, 3, 4, 5, 6];
+  const [cur, setCur] = useState<number>(1);
+
+  // const response = usePosts("1");
+  console.log("PAGE", pagination);
+  // console.log("RESP", response);
+
+  const handlePagination = (action: string) => {
+    if (action === "next") {
+      router.replace(`?limit=4&page=${pagination.page + 1}`);
+    } else {
+      router.replace(`?limit=4&page=${pagination.page - 1}`);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -78,17 +98,30 @@ export default function Home({ movies }: IMovies) {
                 </div>
               ))}
           </div>
+          <Pagination
+            pages={pages}
+            cur={pagination.page}
+            nextPage={() => {
+              handlePagination("next");
+            }}
+            prevPage={() => {
+              handlePagination("prev");
+            }}
+          />
         </div>
       </div>
     </>
   );
 }
 
-export async function getServerSideProps() {
-  const res = await fetch("http://localhost:8000/movies");
+export async function getServerSideProps(ctx: any) {
+  const { page, limit } = ctx.query;
+  const res = await fetch(
+    `http://localhost:8000/movies?limit=${limit || 4}&page=${page || 1}`
+  );
   const data = await res.json();
 
   return {
-    props: { movies: data.movies },
+    props: { movies: data.movies, pagination: data.pagination },
   };
 }
