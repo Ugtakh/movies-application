@@ -3,15 +3,14 @@ dotenv.config();
 import express, { Request, Response } from "express";
 import cors from "cors";
 import connectDB from "./config/db";
-
-import movieRoutes from "./routes/movieRoutes";
+import moviesRoutes from "./routes/moviesRouter";
 
 const app = express();
 app.use(cors());
 
 const MONGO_URI = process.env.MONGO_URI || "";
 
-app.use("/movies", movieRoutes);
+app.use("/movies", moviesRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello Express - TS");

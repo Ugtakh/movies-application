@@ -20,7 +20,6 @@ type Props = {
 
 export default function Home({ movies, pagination }: Props) {
   const router = useRouter();
-  const [page, setPage] = useState(pagination.page);
   return (
     <>
       <Head>
@@ -32,9 +31,9 @@ export default function Home({ movies, pagination }: Props) {
       <div className="p-10">
         <Pagination
           count={pagination.total}
-          page={page}
-          onChange={() => {
-            router.push(`movies/?page=${pagination.page}`);
+          page={pagination.page}
+          onChange={(e: any) => {
+            router.replace(`?limit=20&page=${e.target.textContent}`);
           }}
         />
         <ImageList cols={6} gap={5} rowHeight={450}>
@@ -58,11 +57,14 @@ export default function Home({ movies, pagination }: Props) {
   );
 }
 
-export async function getServerSideProps() {
-  const res = await fetch("http://localhost:8000/movies");
+export async function getServerSideProps(ctx: any) {
+  const { page, limit } = ctx.query;
+  const res = await fetch(
+    `http://localhost:8000/movies?limit=${limit || 20}&page=${page || 1}`
+  );
   const data = await res.json();
 
   return {
-    props: { ...data },
+    props: { movies: data.movies, pagination: data.pagination },
   };
 }
