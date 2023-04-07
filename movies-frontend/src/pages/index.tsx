@@ -1,49 +1,26 @@
+import { IMovie, IMovies } from "@/util/interfaces";
+import {
+  Button,
+  IconButton,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+  Pagination,
+} from "@mui/material";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
-interface IAwards {
-  wins: Number;
-  nominations: Number;
-  text: String;
-}
-interface IMovie {
-  _id: string;
-  plot: String;
-  genres: [String];
-  runtime: Number;
-  cast: [String];
-  num_mflix_comments: Number;
-  poster: string;
-  title: String;
-  fullplot: String;
-  countries: [String];
-  released: Date;
-  directors: [String];
-  writers: [String];
-  awards: IAwards;
-  lastupdated: String;
-  year: Number;
-  imdb: {
-    rating: Number;
-    votes: Number;
-    id: Number;
-  };
-  type: String;
-  tomatoes: {
-    viewer: {
-      rating: Number;
-      numReviews: Number;
-    };
-    lastUpdated: Date;
-  };
-}
-
-interface IMovies {
+type Props = {
   movies: IMovie[];
-}
+  pagination: any;
+};
 
-export default function Home({ movies }: IMovies) {
+export default function Home({ movies, pagination }: Props) {
+  const router = useRouter();
+  const [page, setPage] = useState(pagination.page);
   return (
     <>
       <Head>
@@ -52,33 +29,30 @@ export default function Home({ movies }: IMovies) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="bg-orange-300 min-h-screen">
-        <div className="container mx-auto">
-          <h1 className="font-bold text-white text-3xl">Movies List</h1>
-          <div className="bg-white grid grid-cols-4 gap-4 p-4">
-            {movies.length > 0 &&
-              movies.map((movie: IMovie) => (
-                <div className="group" key={movie._id}>
-                  <div className="aspect-[9/12] relative group bg-lime-200">
-                    <Image
-                      src={movie.poster || ""}
-                      width={100}
-                      height={100}
-                      alt="moviePoster"
-                      className="w-full h-full object-cover rounded"
-                    />
-                    <div className="absolute inset-0 group-hover:bg-black/30 transition-all" />
-                  </div>
-                  <Link
-                    className="text-orange-400"
-                    href={`movies/${movie._id}`}
-                  >
-                    {movie.title}
-                  </Link>
-                </div>
-              ))}
-          </div>
-        </div>
+      <div className="p-10">
+        <Pagination
+          count={pagination.total}
+          page={page}
+          onChange={() => {
+            router.push(`movies/?page=${pagination.page}`);
+          }}
+        />
+        <ImageList cols={6} gap={5} rowHeight={450}>
+          {movies.map((movie) => (
+            <Link className="text-orange-400" href={`movies/${movie._id}`}>
+              <ImageListItem key={movie._id}>
+                <Image
+                  src={movie.poster || ""}
+                  width={100}
+                  height={100}
+                  alt="moviePoster"
+                  className="w-full h-full object-cover rounded"
+                />
+                <ImageListItemBar title={movie.title} subtitle={movie.type} />
+              </ImageListItem>
+            </Link>
+          ))}
+        </ImageList>
       </div>
     </>
   );
@@ -89,6 +63,6 @@ export async function getServerSideProps() {
   const data = await res.json();
 
   return {
-    props: { movies: data.movies },
+    props: { ...data },
   };
 }
