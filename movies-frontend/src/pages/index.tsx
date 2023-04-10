@@ -56,8 +56,8 @@ export default function Home({ movies, pagination }: Props) {
         <Pagination
           count={pagination.total}
           page={pagination.page}
-          onChange={(e: any) => {
-            router.replace(`?limit=20&page=${e.target.textContent}`);
+          onChange={(e: any, page: number) => {
+            router.replace(`?limit=20&page=${page}`);
           }}
           className="mt-5"
         />
