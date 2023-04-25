@@ -1,7 +1,8 @@
-import dotenv from "dotenv";
+import dotenv = require("dotenv");
 dotenv.config();
-import express, { Request, Response } from "express";
-import cors from "cors";
+import express = require("express");
+import { Request, Response } from "express";
+const cors = require("cors");
 import connectDB from "./config/db";
 
 import movieRoutes from "./routes/movieRoutes";
