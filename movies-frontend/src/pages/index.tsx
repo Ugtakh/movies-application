@@ -117,7 +117,9 @@ export default function Home({ movies, pagination }: IMovies) {
 export async function getServerSideProps(ctx: any) {
   const { page, limit } = ctx.query;
   const res = await fetch(
-    `http://localhost:8000/movies?limit=${limit || 4}&page=${page || 1}`
+    `https://movies-application-m524j4kyz-ugtakh.vercel.app/movies?limit=${
+      limit || 4
+    }&page=${page || 1}`
   );
   const data = await res.json();
 

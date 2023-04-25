@@ -30,7 +30,9 @@ const Movie = ({ movie }: any) => {
 };
 
 export async function getServerSideProps({ query }: any) {
-  const res = await fetch(`http://localhost:8000/movies/${query.id}`);
+  const res = await fetch(
+    `https://movies-application-m524j4kyz-ugtakh.vercel.app/movies/${query.id}`
+  );
   const data = await res.json();
 
   return {
