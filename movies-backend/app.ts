@@ -6,6 +6,7 @@ const cors = require("cors");
 import connectDB from "./config/db";
 
 import movieRoutes from "./routes/movieRoutes";
+import chatBotRoute from "./routes/chatBotRoutes";
 
 const app = express();
 app.use(cors());
@@ -13,9 +14,10 @@ app.use(cors());
 const MONGO_URI = process.env.MONGO_URI || "";
 
 app.use("/movies", movieRoutes);
+app.use("/webhook", chatBotRoute);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello Express - TS");
+  res.send("Hello Express - CHATBOT");
 });
 
 connectDB(MONGO_URI);
